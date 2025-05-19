@@ -181,5 +181,67 @@ auto distance = 100.0_m;
 - 연산자 정의는 관련된 타입 정의와 함께 두고, 관련 연산자 일관성을 위해 `operator==`를 정의했다면 `operator!=`도 정의하세요.
 - 내부를 변경하지 않는 이항 연산자는 비멤버함수로 정의하는 것을 선호하세요. `friend` 키워드를 사용해 클래스의 `private` 멤버에 접근 가능하게 하세요.
 - 값이 동등 비교 가능한 타입 `T`에 대해, 비멤버 `operator==`를 정의하고 두 `T` 타입 값이 언제 같다고 간주되는지 문서화하세요.
-- 연산자 오버로드 정의를 피하기 위해 굳이 애쓰지 마십시오. 예를 들어, `Equals()`, `CopyFrom()`, `PrintTo()` 대신 `==`, `=`, `<<`를 정의하는 것을 선호하십시오. 반대로, 다른 라이브러리가 기대한다는 이유만으로 연산자 오버로드를 정의하지 마십시오. 예를 들어, 타입에 자연스러운 순서가 없지만 `std::set`에 저장하고 싶다면, `<`를 오버로드하는 대신 사용자 정의 비교자(custom comparator)를 사용하십시오.
-- `&&`, `||`, `,`, 단항 `&`를 오버로드하지 마십시오. `operator""`를 오버로드하지 마십시오, 즉 사용자 정의 리터럴을 도입하지 마십시오. 다른 곳(표준 라이브러리 포함)에서 제공하는 그러한 리터럴도 사용하지 마십시오.
+- 연산자 오버로드 정의를 피하기 위해 굳이 애쓰지 마십시오. 예를 들어, `Equals()`, `CopyFrom()`, `PrintTo()` 대신 `==`, `=`, `<<`를 정의하는 것을 선호하세요. 반대로, 다른 라이브러리가 기대한다는 이유만으로 연산자 오버로드를 정의하지 마세요. 예를 들어, 타입에 자연스러운 순서가 없지만 `std::set`에 저장하고 싶다면, `<`를 오버로드하는 대신 사용자 정의 비교자(custom comparator)를 사용하세요.
+- `&&`, `||`, `,`, 단항 `&`, `operator""`를 오버로드하지 마세요. 다른 곳(표준 라이브러리 포함)에서 제공하는 그러한 리터럴도 사용하지 마세요.
+
+## 접근 제어
+클래스의 데이터 멤버는 상수가 아닌 한 `private`으로 만드세요. 접근자(accessor, 보통 `const`) 형태의 약간의 간단한 상용구(boilerplate) 코드를 작성하는 비용이 들지만, 불변 조건(invariants)에 대한 추론을 단순화할 수 있습니다.
+
+기술적인 이유로, Google Test를 사용할 때 `.cc` 파일에 정의된 테스트 픽스처(test fixture) 클래스의 데이터 멤버는 `protected`로 하는 것을 허용합니다. 만약 테스트 픽스처 클래스가 사용되는 `.cc` 파일 외부(예: `.h` 파일)에 정의된다면 데이터 멤버를 `private`으로 하세요.
+
+## 선언 순서
+유사한 선언들을 함께 그룹화하고 `public` 부분을 먼저 배치하세요. 클래스 정의는 `public`, `protected`, `private` 순서로 작성합니다.
+
+각 섹션 내에서 유사한 종류의 선언들을 함께 그룹화하고, 아래의 순서를 따르는 것을 선호하세요.
+1. 타입 및 타입 별칭 (`typedef`, `using`, `enum`, 중첩 구조체/클래스, `friend` 타입)
+2. (선택 사항, `struct` 전용) 비정적 데이터 멤버
+3. 정적 상수 (Static constants):
+4. 팩토리 함수 (Factory functions):
+5. 생성자 및 대입 연산자 (Constructors and assignment operators)
+6. 소멸자 (Destructor)
+7. 그 외 모든 함수 (정적 및 비정적 멤버 함수, `friend` 함수)
+8. 그 외 모든 데이터 멤버 (정적 및 비정적)
+
+```cpp
+class MyExampleClass {
+public:
+    // 1. Types and type aliases
+    using DataMap = std::map<std::string, int>;
+    enum class Status { kOk, kError };
+
+    // 3. Static constants
+    static constexpr int kDefaultRetries = 3;
+
+    // 4. Factory functions (example)
+    static std::unique_ptr<MyExampleClass> Create() {
+        return std::make_unique<MyExampleClass>();
+    }
+
+    // 5. Constructors and assignment operators
+    MyExampleClass();
+    MyExampleClass(const MyExampleClass& other);
+    MyExampleClass& operator=(const MyExampleClass& other);
+
+    // 6. Destructor
+    ~MyExampleClass();
+
+    // 7. All other functions
+    Status processData(const DataMap& data);
+    void reset();
+    static void logMessage(const std::string& msg);
+
+protected:
+    // ... protected members in the same order if any ...
+    void protectedHelper();
+
+private:
+    // 7. (Helper functions might be private too)
+    bool validateInput(const DataMap& data);
+
+    // 8. All other data members
+    int retry_count_;
+    DataMap internal_data_;
+    static Logger* static_logger_;
+};
+```
+- 큰 메서드 정의를 클래스 정의 내부에 인라인으로 넣지 마세요.
