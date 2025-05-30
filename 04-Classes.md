@@ -74,37 +74,37 @@
 ```cpp
 class Copyable
 {
-public:
-    Copyable(const Copyable& other) = default;
-    Copyable& operator=(const Copyable& other) = default;
+  public:
+  Copyable(const Copyable& other) = default;
+  Copyable& operator=(const Copyable& other) = default;
 
-    // The implicit move operations are suppressed by the declarations above.
-    // You may explicitly declare move operations to support efficient moves.
+  // The implicit move operations are suppressed by the declarations above.
+  // You may explicitly declare move operations to support efficient moves.
 };
 
 class MoveOnly
 {
-public:
-    MoveOnly(MoveOnly&& other) = default;
-    MoveOnly& operator=(MoveOnly&& other) = default;
+  public:
+  MoveOnly(MoveOnly&& other) = default;
+  MoveOnly& operator=(MoveOnly&& other) = default;
 
-    // The copy operations are implicitly deleted, but you can
-    // spell that out explicitly if you want:
-    MoveOnly(const MoveOnly&) = delete;
-    MoveOnly& operator=(const MoveOnly&) = delete;
+  // The copy operations are implicitly deleted, but you can
+  // spell that out explicitly if you want:
+  MoveOnly(const MoveOnly&) = delete;
+  MoveOnly& operator=(const MoveOnly&) = delete;
 };
 
 class NotCopyableOrMovable
 {
-public:
-    // Not copyable or movable
-    NotCopyableOrMovable(const NotCopyableOrMovable&) = delete;
-    NotCopyableOrMovable& operator=(const NotCopyableOrMovable&) = delete;
+  public:
+  // Not copyable or movable
+  NotCopyableOrMovable(const NotCopyableOrMovable&) = delete;
+  NotCopyableOrMovable& operator=(const NotCopyableOrMovable&) = delete;
 
-    // The move operations are implicitly disabled, but you can
-    // spell that out explicitly if you want:
-    NotCopyableOrMovable(NotCopyableOrMovable&&) = delete;
-    NotCopyableOrMovable& operator=(NotCopyableOrMovable&&) = delete;
+  // The move operations are implicitly disabled, but you can
+  // spell that out explicitly if you want:
+  NotCopyableOrMovable(NotCopyableOrMovable&&) = delete;
+  NotCopyableOrMovable& operator=(NotCopyableOrMovable&&) = delete;
 };
 ```
 - 이러한 선언/삭제는 그 기능이 명백한 경우에만 생략될 수 있습니다.
@@ -158,7 +158,7 @@ C++읜 매개변수 중 하나가 사용자 정의 타입이기만 하면, 사�
 ```cpp
 Distance operator"" _m(long double val)
 {
-    return Distance(static_cast<double>(val));
+  return Distance(static_cast<double>(val));
 }
 
 auto distance = 100.0_m;
@@ -203,45 +203,51 @@ auto distance = 100.0_m;
 8. 그 외 모든 데이터 멤버 (정적 및 비정적)
 
 ```cpp
-class MyExampleClass {
+class MyExampleClass
+{
 public:
-    // 1. Types and type aliases
-    using DataMap = std::map<std::string, int>;
-    enum class Status { kOk, kError };
+  // 1. Types and type aliases
+  using DataMap = std::map<std::string, int>;
+  enum class Status
+  {
+    kOk,
+    kError
+  };
 
-    // 3. Static constants
-    static constexpr int kDefaultRetries = 3;
+  // 3. Static constants
+  static constexpr int kDefaultRetries = 3;
 
-    // 4. Factory functions (example)
-    static std::unique_ptr<MyExampleClass> Create() {
-        return std::make_unique<MyExampleClass>();
-    }
+  // 4. Factory functions (example)
+  static std::unique_ptr<MyExampleClass> Create()
+  {
+    return std::make_unique<MyExampleClass>();
+  }
 
-    // 5. Constructors and assignment operators
-    MyExampleClass();
-    MyExampleClass(const MyExampleClass& other);
-    MyExampleClass& operator=(const MyExampleClass& other);
+  // 5. Constructors and assignment operators
+  MyExampleClass();
+  MyExampleClass(const MyExampleClass& other);
+  MyExampleClass& operator=(const MyExampleClass& other);
 
-    // 6. Destructor
-    ~MyExampleClass();
+  // 6. Destructor
+  ~MyExampleClass();
 
-    // 7. All other functions
-    Status processData(const DataMap& data);
-    void reset();
-    static void logMessage(const std::string& msg);
+  // 7. All other functions
+  Status processData(const DataMap& data);
+  void reset();
+  static void logMessage(const std::string& msg);
 
 protected:
-    // ... protected members in the same order if any ...
-    void protectedHelper();
+  // ... protected members in the same order if any ...
+  void protectedHelper();
 
 private:
-    // 7. (Helper functions might be private too)
-    bool validateInput(const DataMap& data);
+  // 7. (Helper functions might be private too)
+  bool validateInput(const DataMap& data);
 
-    // 8. All other data members
-    int retry_count_;
-    DataMap internal_data_;
-    static Logger* static_logger_;
+  // 8. All other data members
+  int retry_count_;
+  DataMap internal_data_;
+  static Logger* static_logger_;
 };
 ```
 - 큰 메서드 정의를 클래스 정의 내부에 인라인으로 넣지 마세요.

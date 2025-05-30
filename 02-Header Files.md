@@ -167,16 +167,16 @@ private:
 template <typename T>
 class Foo
 {
-public:
-    int bar()
-    {
-        return bar_;
-    }
+  public:
+  int bar()
+  {
+    return bar_;
+  }
 
-    void MethodWithHugeBody();
+  void MethodWithHugeBody();
 
-private:
-    int bar_;
+  private:
+  int bar_;
 };
 
 // Implementation details only below here
@@ -184,7 +184,7 @@ private:
 template <typename T>
 void Foo<T>::MethodWithHugeBody()
 {
-    ...
+  ...
 }
 ```
 

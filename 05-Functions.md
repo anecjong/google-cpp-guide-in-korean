@@ -50,19 +50,19 @@ void setup(int mode, bool logging, int timeout)
 class Base
 {
 public:
-    virtual void Foo(int x = 10)
-    {
-        std::cout << "Base::foo, x = " << x << std::endl;
-    }
+  virtual void Foo(int x = 10)
+  {
+    std::cout << "Base::foo, x = " << x << std::endl;
+  }
 };
 
 class Derived : public Base
 {
 public:
-    void Foo(int x = 20) override
-    {
-        std::cout << "Derived::foo, x = " << x << std::endl;
-    }
+  void Foo(int x = 20) override
+  {
+    std::cout << "Derived::foo, x = " << x << std::endl;
+  }
 };
 ```
 - 기본 매개변수는 각 호출 지점에서 재평가되어 생성된 코드 부풀림(Code bloat)을 만들 수 있습니다. 기본값이 변할 수 있는 경우 리뷰어는 함수 선언 시점의 값으로 고정될 것으로 오해할 수 있지만, 실제로는 호출 시점의 현재값이 적용됩니다.
